@@ -34,7 +34,7 @@ local function checkNotReady(pl) -- не даем совершать никак�
 	end
 
 	if (not IGS.REPEATER:IsEmpty()) then
-		IGS.Notify(pl,"Автодонат временно не работает")
+		IGS.Notify(pl, IGS.GetPhrase("autodonate_not_working"))
 		return true
 	end
 end
@@ -62,22 +62,22 @@ local function IGS_Purchase(pl, uid, cb)
 	local price = ITEM:GetPrice(pl)
 
 	local err = -- не в ITEM:CanBuy, потому что в некоторых случаях эти проверки вредны, когда хочешь дать игроку итем, который ему не положен
-		not ITEM:CanSee( pl ) and "Как вы меня нашли?"
-		or not IGS.CanAfford(pl, price) and ("Для покупки нужно " .. PL_MONEY(price))
-		or IGS.IsInventoryOverloaded(pl) and "У вас перегруз в донат инвентаре. А еще вы один из немногих, кто видел это!"
-		or pl.igs_unfinished_purchase and "Запрос на покупку в процессе. Подождите, пожалуйста" -- в цикле с клиента вызов функции покупки
+		not ITEM:CanSee( pl ) and IGS.GetPhrase("how_do_you_find_me")
+		or not IGS.CanAfford(pl, price) and (IGS.GetPhrase("for_purchase_needed"):format(PL_MONEY(price)))
+		or IGS.IsInventoryOverloaded(pl) and IGS.GetPhrase("inventory_overload")
+		or pl.igs_unfinished_purchase and IGS.GetPhrase("purchase_order_in_progress") -- в цикле с клиента вызов функции покупки
 
 	-- инвентарь офнут, значит итем сразу должен иметь возможность активироваться
 	if not IGS.C.Inv_Enabled then
 		local can,e = ITEM:CanActivate(pl)
 		if not can then
-			err = e or "Ошибка 1"
+			err = e or IGS.GetPhrase("error") + "1"
 		end
 	end
 
 	local can,e = ITEM:CanBuy(pl)
 	if not can then
-		err = e or "Ошибка 2"
+		err = e or IGS.GetPhrase("error") + "2"
 	end
 
 	if err then
@@ -98,7 +98,7 @@ local function IGS_Purchase(pl, uid, cb)
 			end
 
 			if IGS.C.Inv_Enabled then
-				IGS.Notify(pl, "Ваша покупка находится в /donate инвентаре")
+				IGS.Notify(pl, IGS.GetPhrase("your_purchase_in_inventory"))
 			end
 
 			cb(id_or_err)
@@ -122,7 +122,7 @@ net_ReceiveProtected("IGS.Purchase", function(pl)
 		if errMsg_ then
 			local ITEM = IGS.GetItemByUID(sItemUID)
 			hook.Run("IGS.OnFailedPurchase", pl, ITEM, errMsg_)
-			IGS.Notify(pl,"Ошибка покупки " .. sItemUID .. ": " .. errMsg_)
+			IGS.Notify(pl, IGS.GetPhrase("purchase_error"):format(sItemUID, errMsg_))
 		end
 	end)
 end)
@@ -136,13 +136,13 @@ end)
 ---------------------------------------------------------------------------]]
 local function IGS_Activate(pl, invDbID, cb)
 	if not IGS.C.Inv_Enabled then
-		cb(nil, "Инвентарь отключен. Активация предметов моментальная")
+		cb(nil, IGS.GetPhrase("inventory_disabled_instant"))
 		return
 	end
 
 	local INVITEM = IGS.Inventory(pl,"map")[invDbID]
 	if not INVITEM then -- если чел резко дважды кнопку нажал
-		cb(nil, "Предмет уже активирован. ID: " .. tostring(invDbID))
+		cb(nil, IGS.GetPhrase("itemid_already_activated"):format(tostring(invDbID)))
 		return
 	end
 
@@ -150,20 +150,20 @@ local function IGS_Activate(pl, invDbID, cb)
 
 	local can,err = IGSITEM:CanActivate(pl, invDbID)
 	if not can then
-		cb(nil, err or "Ошибка")
+		cb(nil, err or IGS.GetPhrase("error"))
 		return
 	end
 
 	-- Выше еще проверка. Это лишняя, но не помешает
 	local tRemoved = IGS.DeletePlayerInventoryItemLocally(pl, invDbID)
 	if (not tRemoved) then
-		cb(nil, "Предмет уже активирован #2")
+		cb(nil, IGS.GetPhrase("item_alr_activated") + " #2")
 		return
 	end
 
 	IGS.DeleteInventoryItem(function(ok)
 		if not ok then -- например, через панель \/
-			cb(nil, "Предмет не найден. Возможно, уже активирован")
+			cb(nil, IGS.GetPhrase("item_not_found"))
 			return
 		end
 
@@ -192,7 +192,7 @@ end)
 ---------------------------------------------------------------------------]]
 local function IGS_EnterCoupon(pl,sCode,cb)
 	if string.Trim(sCode) == "" then
-		cb(false, "Введите код купона")
+		cb(false, IGS.GetPhrase("entry_coupon"))
 		return
 	end
 

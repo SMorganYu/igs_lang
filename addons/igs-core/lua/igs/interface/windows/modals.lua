@@ -22,7 +22,7 @@ function IGS.BoolRequest(title, text, cback)
 
 	y = y + 5
 	m.btnOK = uigs.Create("igs_button", function(self, p)
-		self:SetText("Да")
+		self:SetText(IGS.GetPhrase("yes"))
 		self:SetPos(5, y)
 		self:SetSize(p:GetWide() / 2 - 7.5, 25)
 		self.DoClick = function()
@@ -32,7 +32,7 @@ function IGS.BoolRequest(title, text, cback)
 	end, m)
 
 	m.btnCan = uigs.Create("igs_button", function(self, p)
-		self:SetText("Нет")
+		self:SetText(IGS.GetPhrase("no"))
 		self:SetPos(p.btnOK:GetWide() + 10, y)
 		self:SetSize(p.btnOK:GetWide(), 25)
 		self:RequestFocus()
@@ -85,7 +85,7 @@ function IGS.StringRequest(title, text, default, cback)
 	end, m)
 
 	local btnOK = uigs.Create("igs_button", function(self, p)
-		self:SetText("ОК")
+		self:SetText(IGS.GetPhrase("ok"))
 		self:SetPos(5, y)
 		self:SetSize(p:GetWide() / 2 - 7.5, 25)
 		self:SetActive(true)
@@ -96,7 +96,7 @@ function IGS.StringRequest(title, text, default, cback)
 	end, m)
 
 	uigs.Create("igs_button", function(self)
-		self:SetText("Отмена")
+		self:SetText(IGS.GetPhrase("cancel"))
 		self:SetPos(btnOK:GetWide() + 10, y)
 		self:SetSize(btnOK:GetWide(), 25)
 		self:RequestFocus()
@@ -116,25 +116,25 @@ end
 
 local null = function() end
 function IGS.ShowNotify(sText, sTitle, fOnClose)
-	local m = IGS.BoolRequest(sTitle or "[IGS] Оповещение", sText, fOnClose or null)
+	local m = IGS.BoolRequest(sTitle or IGS.GetPhrase("igs_notify"), sText, fOnClose or null)
 	m.btnCan:Remove() -- оставляем только 1 кнопку
 
 	local _,y = m.btnOK:GetPos()
-	m.btnOK:SetText("ОК")
+	m.btnOK:SetText(IGS.GetPhrase("ok"))
 	m.btnOK:SetPos((m:GetWide() - m.btnOK:GetWide()) / 2, y)
 
 	return m
 end
 
 function IGS.WIN.ActivateCoupon()
-	IGS.StringRequest("Активация купона",
-		"Если у вас есть донат купон, то введите его ниже",
+	IGS.StringRequest(IGS.GetPhrase("coupon_activation"),
+		IGS.GetPhrase("coupon_activationtext"),
 	nil,function(val)
 		IGS.UseCoupon(val,function(errMsg)
 			if errMsg then
-				IGS.ShowNotify(errMsg, "Ошибка активации купона")
+				IGS.ShowNotify(errMsg, IGS.GetPhrase("coupon_activationerr"))
 			else
-				IGS.ShowNotify("Деньги начислены на ваш счет. Можете посмотреть на это в транзакциях, переоткрыв донат меню", "Успешная активации купона")
+				IGS.ShowNotify(IGS.GetPhrase("coupon_activated"), IGS.GetPhrase("coupon_activatedtitle"))
 			end
 		end)
 	end)

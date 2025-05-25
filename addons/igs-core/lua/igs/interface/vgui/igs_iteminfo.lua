@@ -178,7 +178,7 @@ function PANEL:SetDescription(sDescription)
 	end
 
 	pnl:SetTall(y)
-	self:AddPanel("Описание",pnl)
+	self:AddPanel(IGS.GetPhrase("item_desc"),pnl)
 end
 
 function PANEL:SetInfo(tInf)
@@ -211,7 +211,7 @@ function PANEL:SetInfo(tInf)
 	end
 
 	pnl:SetTall(y)
-	self:AddPanel("Информация",pnl)
+	self:AddPanel(IGS.GetPhrase("item_info"),pnl)
 end
 
 -- Добавляет панель с указанным изображением
@@ -224,7 +224,7 @@ function PANEL:SetImage(sUrl)
 	pnl:SetSize(self:GetWide(),self:GetWide() / 5 * 2) -- соотношение 5:2
 	pnl:SetURL(sUrl)
 
-	self:AddPanel("Изображение",pnl)
+	self:AddPanel(IGS.GetPhrase("item_image"),pnl)
 end
 
 vgui.Register("igs_iteminfo",PANEL,"Panel")

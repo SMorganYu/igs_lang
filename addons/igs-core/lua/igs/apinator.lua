@@ -7,12 +7,9 @@ local function map(t, f)
 	return _t
 end
 
-local error_no_igsmod =
-	"ABTogoHaT He HacTpoeH: Hy}{Ho ycTaHoBuTb igsmodificator. " ..
-	"(CKa4auTe ero c cauTa gm-donate.net/panel)"
+local error_no_igsmod = IGS.GetPhrase("autodonate_notconfigured")
 
-local error_invalid_credentials =
-	"Не указаны или неверно указаны данные проекта в файле config_sv.lua"
+local error_invalid_credentials = IGS.GetPhrase("configsv_incorr")
 
 local DELIMITER = "{up}"
 function IGS.GetSign(tParams, secret)

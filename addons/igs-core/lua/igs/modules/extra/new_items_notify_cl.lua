@@ -1,9 +1,9 @@
 -- bib.setNum("igs:lasttimeitems", 85)
 
 -- 18, 23, 245
-local PL_POYAVILSA = PLUR({"появился","появилось","появилось"})
-local PL_NEW       = PLUR({"новый", "новых", "новых"})
-local PL_ITEMS     = PLUR({"предмет", "предмета", "предметов"})
+local PL_POYAVILSA = PLUR(IGS.GetPhrase("pl_appear"))
+local PL_NEW       = PLUR(IGS.GetPhrase("pl_new"))
+local PL_ITEMS     = PLUR(IGS.GetPhrase("pl_items"))
 
 hook.Add("IGS.Loaded", "NewItemsNotify", function()
 	-- local ip,port = game.GetIPAddress():match("(.+):(.+)")
@@ -26,9 +26,9 @@ hook.Add("IGS.Loaded", "NewItemsNotify", function()
 		local _,sAppear = PL_POYAVILSA(new)
 
 		local message =
-			"В нашем /donate магазине " .. sAppear .. " " .. new .. " " .. sNew .. " " .. sItems .. ". Желаете взглянуть?"
+			IGS.GetPhrase("new_items"):format(sAppear, new, sNew, sItems)
 
-		IGS.BoolRequest("Пополнение магазина", message, function(aga)
+		IGS.BoolRequest(IGS.GetPhrase("shop_deposit"), message, function(aga)
 			if aga then
 				IGS.UI()
 			end

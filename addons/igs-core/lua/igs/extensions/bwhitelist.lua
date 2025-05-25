@@ -9,7 +9,7 @@ end
 function STORE_ITEM:SetBWhitelist(team_cmd)
 	self:SetCanActivate(function(pl)
 		if GAS.JobWhitelist:IsWhitelisted(pl, team_id(team_cmd)) then
-			return "Вы в вайтлисте"
+			return IGS.GetPhrase("you_are_in_whitelist")
 		end
 	end)
 	self:SetInstaller(function(pl)

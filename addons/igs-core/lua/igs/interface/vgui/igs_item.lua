@@ -43,7 +43,7 @@ function PANEL:SetItem(STORE_ITEM)
 
 	self:SetTitleColor(STORE_ITEM:GetHighlightColor()) -- nil
 
-	self:SetSign( "Действ. " .. IGS.TermToStr(STORE_ITEM:Term()) )
+	self:SetSign( IGS.GetPhrase("acti") .. " " .. IGS.TermToStr(STORE_ITEM:Term()) )
 
 	self:SetBottomText( getBottomText(STORE_ITEM, true) )
 

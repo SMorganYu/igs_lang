@@ -1,5 +1,5 @@
 hook.Add("IGS.CatchActivities","purchases",function(activity,sidebar)
-	local bg = sidebar:AddPage("Активные покупки")
+	local bg = sidebar:AddPage(IGS.GetPhrase("activepurchases"))
 
 
 	--[[-------------------------------------------------------------------------
@@ -9,36 +9,33 @@ hook.Add("IGS.CatchActivities","purchases",function(activity,sidebar)
 		pnl:Dock(FILL)
 		pnl:DockMargin(5,5,5,5)
 
-		pnl:SetTitle("Активные покупки")
+		pnl:SetTitle(IGS.GetPhrase("activepurchases"))
 
 		local multisv = IGS.SERVERS.TOTAL > 1
 		if multisv then
-			pnl:AddColumn("Сервер",100)
+			pnl:AddColumn(IGS.GetPhrase("server"),100)
 		else
 			pnl:AddColumn("#",40)
 		end
 
-		pnl:AddColumn("Предмет")
-		pnl:AddColumn("Куплен",90)
-		pnl:AddColumn("Истечет",90)
+		pnl:AddColumn(IGS.GetPhrase("item"))
+		pnl:AddColumn(IGS.GetPhrase("buyedondate") .. " ",90)
+		pnl:AddColumn(IGS.GetPhrase("willexpire"),90)
 
 
 		IGS.GetMyPurchases(function(d)
 			if not IsValid(pnl) then return end -- Долго данные получались, фрейм успели закрыть
 
-			IGS.AddTextBlock(bg.side,"Что тут?",
+			IGS.AddTextBlock(bg.side, IGS.GetPhrase("whatshere"),
 				#d == 0 and
-					"Здесь будут отображаться ваши активные покупки\n\n" ..
-					"Не самое ли подходящее время, чтобы совершить первую?\n\n" ..
-					"Табличка сразу станет красивее. Честно-честно"
+					IGS.GetPhrase("purchasesexplain")
 					or
-					"Слева отображаются ваши активные услуги.\n\n" ..
-					"Чем больше услуг, тем красивее эта табличка выглядит, а администрация более счастливая ;)"
-			)
+					IGS.GetPhrase("purchasealrhaveexpl")
+				)
 
-			IGS.AddButton(bg.side,"Купить плюшку",function()
+			IGS.AddButton(bg.side, IGS.GetPhrase("purchasebuybtn"),function()
 				if #IGS.GetItems() == 0 then -- если NULL уберу
-					LocalPlayer():ChatPrint("Настройте предметы автодоната в sh_additems.lua")
+					LocalPlayer():ChatPrint(IGS.GetPhrase("additemsduh"))
 					return
 				end
 
@@ -60,14 +57,14 @@ hook.Add("IGS.CatchActivities","purchases",function(activity,sidebar)
 					-- v.id,
 					multisv and sv_name or #d - i + 1,
 					sName,
-					IGS.TimestampToDate(v.purchase) or "Никогда",
-					IGS.TimestampToDate(v.expire)   or "Никогда"
-				):SetTooltip("Имя сервера: " .. sv_name .. "\nID в системе: " .. v.id .. "\nОригинальное название: " .. v.item)
+					IGS.TimestampToDate(v.purchase) or IGS.GetPhrase("never"),
+					IGS.TimestampToDate(v.expire)   or IGS.GetPhrase("never")
+				):SetTooltip(IGS.GetPhrase("servername") .. " " .. sv_name .. IGS.GetPhrase("idinsystem") .. " " .. v.id .. IGS.GetPhrase("originame") .. " " .. v.item)
 			end
 		end)
 	end, bg)
 
-	activity:AddTab("Покупки",bg,"materials/icons/fa32/reorder.png")
+	activity:AddTab(IGS.GetPhrase("purchases"),bg,"materials/icons/fa32/reorder.png")
 end)
 
 -- IGS.UI()

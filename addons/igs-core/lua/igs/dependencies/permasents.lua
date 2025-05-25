@@ -33,7 +33,7 @@ end
 
 function IGS.PermaSaveFeature(class)
 	properties.Add(class .. "_perma_add", {
-		MenuLabel = "Сохранить на карте",
+		MenuLabel = IGS.GetPhrase("saveonmap"),
 		Order = 855,
 		MenuIcon = "icon16/bullet_disk.png",
 
@@ -50,13 +50,13 @@ function IGS.PermaSaveFeature(class)
 			if not self:Filter(ent, pl) then return end
 
 			if ent.permaSentUID then
-				pl:ChatPrint("Эта энтити уже сохранена. Удалите и сохраните заново, если хотите переместить")
+				pl:ChatPrint(IGS.GetPhrase("ent_alr_saved"))
 				return
 			end
 
 			local uid = math.random(0xFFFF)
 			cookie.Set("perma_" .. class .. "_" .. uid, util.TableToJSON({ent:GetPos(), ent:GetAngles()}))
-			pl:ChatPrint("Позиция сохранена под UID " .. uid)
+			pl:ChatPrint(IGS.GetPhrase("ent_saved_id") .. " "  .. uid)
 			ent.permaSentUID = uid
 
 			updateIndex(uid, class)
@@ -64,7 +64,7 @@ function IGS.PermaSaveFeature(class)
 	})
 
 	properties.Add(class .. "_perma_delete", {
-		MenuLabel = "Удалить с карты",
+		MenuLabel = IGS.GetPhrase("ent_delete_from_map"),
 		Order = 856,
 		MenuIcon = "icon16/bin_closed.png",
 
@@ -81,13 +81,13 @@ function IGS.PermaSaveFeature(class)
 			if not self:Filter(ent, pl) then return end
 
 			if not ent.permaSentUID then
-				pl:ChatPrint("Эта энтити не перманентная")
+				pl:ChatPrint(IGS.GetPhrase("ent_not_permanent"))
 				return
 			end
 
 			local uid  = ent.permaSentUID
 			cookie.Set("perma_" .. class .. "_" .. uid, nil)
-			pl:ChatPrint("Объект удален. UID был " .. uid)
+			pl:ChatPrint(IGS.GetPhrase("ent_deleted") .. " "  .. uid)
 			ent:Remove()
 
 			updateIndex(uid, nil)
@@ -111,9 +111,9 @@ if SERVER then
 				local ent = SpawnSent(class, util.StringToType(dat[1], "Vector"), util.StringToType(dat[2], "Angle"))
 				ent.permaSentUID = uid
 
-				IGS.dprint("PermaSents: Заспавнили ", class)
+				IGS.dprint(IGS.GetPhrase("perma_spawned") .. " ", class)
 			else
-				IGS.dprint("PermaSents: ", class, " не существует на сервере")
+				IGS.dprint(IGS.GetPhrase("perma_not_exist"):format(class))
 			end
 		end
 	end)

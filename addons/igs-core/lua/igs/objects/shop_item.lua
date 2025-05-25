@@ -362,16 +362,12 @@ function IGS.AddItem(sName, sUID, iPrice)
 	-- Поле БД 32. Но с "P: " UID надо сокращать
 	-- P: entity_hpwand_spell_simple_wand
 	if #sUID > 28 then
-		IGS.prints(Color(250,20,20), "",
-			"UID ", sUID, " имеет длину свыше 28 символов, что не допускается\n" ..
-			"Причиной также могут стать кириллические (русские) или иные (emoji) символы.\n" ..
-			"UniqueID предмета должен состоять из маленьких английских (латинских) букв без пробелов и быть короче 28 символов"
-		)
+		IGS.prints(Color(250,20,20), "", IGS.GetPhrase("uid_big"):format(sUID))
 		-- return -- из-за этого в консоль вылезет ошибка, т.е. не вернется объект
 
 		local old = sUID
 		sUID = old:sub(1, 28)
-		IGS.prints("UID ", old, " сокращен до ", sUID)
+		IGS.prints(IGS.GetPhrase("uid_cutted"):format(old, sUID))
 	end
 
 	-- Защита от сбивания айдишников из-за рефреша файла с добавлением итемов
@@ -399,11 +395,11 @@ end
 
 
 local null = IGS.Item("null", "null"):SetPrice(0)
-	:SetDescription("Этот предмет, скорее всего, когда-то существовал или существует на другом сервере, но не здесь")
+	:SetDescription(IGS.GetPhrase("item_existed"))
 	:SetIcon("https://file.def.pm/A8j3oEEH.png")
 	:SetImage("https://file.def.pm/T1cWTW2m.jpeg")
-	:SetCanBuy(function() return "Этого предмета на сервере нет. Как вы нашли его?" end)
-	:SetCanActivate(function() return "Этого предмета на сервере нет. Можете уничтожить его" end) -- например купил в инвентарь, а потом uid сменился
+	:SetCanBuy(function() return IGS.GetPhrase("item_not_on_server") end)
+	:SetCanActivate(function() return IGS.GetPhrase("item_not_on_server_text") end) -- например купил в инвентарь, а потом uid сменился
 	:SetCanSee(false) -- чтобы не отображался в магазине
 
 null.isnull = true -- для проверки во время активации

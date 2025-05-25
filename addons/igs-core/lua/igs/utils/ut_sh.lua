@@ -93,8 +93,8 @@ end
 
 
 local terms = {
-	[1] = "бесконечно",
-	[2] = "единоразово",
+	[1] = IGS.GetPhrase("infinite"),
+	[2] = IGS.GetPhrase("onetime"),
 	[3] = "%s"
 }
 
@@ -117,11 +117,11 @@ end
 -- TODO: может удалить с sh (используется только на клиенте)
 function IGS.FormItemInfo(ITEM, pl)
 	return {
-		["Категория"]  = ITEM:Category(),
-		["Действует"]  = IGS.TermToStr(ITEM:Term()),
-		["Цена"]       = PL_MONEY(ITEM:GetPrice(pl)),
-		["Без скидки"] = ITEM.discounted_from and PL_MONEY(ITEM.discounted_from) or nil,
-		["Покупки стакаются"]  = ITEM:IsStackable() and "да" or "нет",
+		[IGS.GetPhrase("category")]  = ITEM:Category(),
+		[IGS.GetPhrase("validuntil")]  = IGS.TermToStr(ITEM:Term()),
+		[IGS.GetPhrase("price")]       = PL_MONEY(ITEM:GetPrice(pl)),
+		[IGS.GetPhrase("nodiscount")] = ITEM.discounted_from and PL_MONEY(ITEM.discounted_from) or nil,
+		[IGS.GetPhrase("purchases_stack")]  = ITEM:IsStackable() and IGS.GetPhrase("yes") or IGS.GetPhrase("no"),
 	}
 end
 
@@ -183,7 +183,7 @@ function IGS.SignPrice(iPrice) -- 10 Alc
 end
 
 PL_MONEY = PLUR(IGS.C.CurrencyPlurals)
-PL_DAYS  = PLUR({"день", "дня", "дней"})
+PL_DAYS  = PLUR(IGS.GetPhrase("pl_days"))
 
 -- #TODO: ОБРАТНАЯ СОВМЕСТИМОСТЬ. НЕ применяется в core.
 -- https://forum.gm-donate.net/t/cryptos-igs/1461/6

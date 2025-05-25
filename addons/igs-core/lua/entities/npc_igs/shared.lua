@@ -1,6 +1,6 @@
 ENT.Base      = "base_ai"
 ENT.Type      = "ai"
-ENT.PrintName = "Донат NPC"
+ENT.PrintName = IGS.GetPhrase("donate_npc")
 ENT.Author    = "GMDonate"
 ENT.Category  = "IGS"
 ENT.Spawnable = true

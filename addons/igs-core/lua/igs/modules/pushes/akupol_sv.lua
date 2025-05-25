@@ -55,8 +55,8 @@ function kupol.new(sUrl, uid, iTimeout)
 		local b = #res.updates == 0 and requested_ts > remote_ts -- переход с dev на prod, где ts больше
 
 		if a or b then
-			local log_pattern = a and "ts сервера ({}) меньше локального ({})"
-				or "Похоже, что на сервере произошел баг или сервер изменился. ts {} prev {}"
+			local log_pattern = a and IGS.GetPhrase("akupol_log1")
+				or IGS.GetPhrase("akupol_log2")
 
 			log.warning(log_pattern, remote_ts, requested_ts)
 			bib.setNum("lp:ts:" .. o.uid, remote_ts)
@@ -76,13 +76,13 @@ function kupol.new(sUrl, uid, iTimeout)
 
 			local _, err = pcall(o.handler, upd)
 			if err then
-				log.error("Внутри хендлера произошла ошибка и работа чуть не прекратилась: {}", err)
+				log.error(IGS.GetPhrase("akupol_log4"), err)
 			end
 		end
 
 		-- https://t.me/c/1353676159/43747
 		if ts_diff > #res.updates then
-			log.warning("Апдейты долго не запрашивались и {} шт утеряно", ts_diff - #res.updates)
+			log.warning(IGS.GetPhrase("akupol_log5"), ts_diff - #res.updates)
 			bib.setNum("lp:ts:" .. o.uid, remote_ts)
 		end
 	end
@@ -99,7 +99,7 @@ function kupol.new(sUrl, uid, iTimeout)
 				o.consume_updates()
 
 			else
-				log.error("Error: {}. Waiting 5 sec and retrying", err)
+				log.error(IGS.GetPhrase("akupol_log6"), err)
 				timer.Simple(5, o.consume_updates)
 			end
 		end)

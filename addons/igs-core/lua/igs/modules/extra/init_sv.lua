@@ -45,7 +45,7 @@ end)
 ---------------------------------------------------------------------------]]
 concommand.Add("addfunds", function(pl, _, _, argss)
 	if IsValid(pl) then
-		IGS.prints(Color(240, 173, 78), "", pl:Nick(),  " пытался выполнить ", ("addfunds " .. argss),  " через игровую консоль")
+		IGS.prints(Color(240, 173, 78), "", IGS.GetPhrase("report_cmd"):format(pl:Nick(), argss))
 		-- IGS.Notify(pl, "Команда работает только с серверной консоли")
 		return
 	end
@@ -55,20 +55,20 @@ concommand.Add("addfunds", function(pl, _, _, argss)
 	if note == "" then note = nil end
 
 	if not amount then
-		IGS.prints("Формат команды нарушен. Пример:\n", "addfunds STEAM_0:1:2345678 10 Необязательное примечание")
+		IGS.prints(IGS.GetPhrase("format_mismatch"))
 		return
 	end
 
 	local targ = player.GetBySteamID(sid)
 	if targ then
 		targ:AddIGSFunds(amount, note, function()
-			IGS.prints("Транзакция успешно проведена. ", "Баланс игрока: " .. PL_MONEY( targ:IGSFunds() ))
+			IGS.prints(IGS.GetPhrase("transaction_completed") .. " " .. PL_MONEY( targ:IGSFunds() ))
 		end)
 
 	-- Игрок оффлайн
 	else
 		IGS.Transaction(util.SteamIDTo64(sid), amount, note, function()
-			IGS.prints("Транзакция успешно проведена, но игрок не на сервере")
+			IGS.prints(IGS.GetPhrase("transaction_completed_offline"))
 		end)
 
 	end
@@ -101,7 +101,7 @@ end)
 hook.Add("IGS.PlayerPurchasedItem", "IGS.BroadcastPurchase", function(pl, ITEM)
 	if IGS.C.BroadcastPurchase == false then return end -- TODO сделать модулем
 
-	IGS.NotifyAll(pl:Nick() .. " купил " .. ITEM:Name())
+	IGS.NotifyAll(IGS.GetPhrase("notify_buyed"):format(pl:Nick(), ITEM:Name()))
 end)
 
 
@@ -113,12 +113,10 @@ end)
 hook.Add("IGS.PlayerDonate", "ThanksForDonate", function(pl, rub)
 	local score = pl.igs_score -- TODO: make netvar
 
-	IGS.Notify(pl, Format("Спасибо вам за пополнение счета. " ..
-		"Ваш новый Score на всех проектах - %d. " ..
-		"Что такое Score: vk.cc/caHTZi", score))
+	IGS.Notify(pl, Format(IGS.GetPhrase("notify_thanks"), score))
 
 	local rub_str  = PL_MONEY(rub)
-	local full_str = Format("%s пополнил счет на %s. Его новый Score: %s", pl:Nick(), rub_str, score)
+	local full_str = Format(IGS.GetPhrase("notify_deposited"), pl:Nick(), rub_str, score)
 
 	IGS.NotifyAll(full_str)
 end)
@@ -128,8 +126,8 @@ hook.Add("IGS.PlayerPurchasesLoaded", "BalanceRemember", function(pl)
 	if balance >= 10 then
 		timer.Simple(10, function()
 			if not IsValid(pl) then return end
-			IGS.Notify(pl, "Вы можете потратить " .. IGS.SignPrice(balance) .. " через /donate")
-			IGS.Notify(pl, "Ваш Score " .. (pl.igs_score or 0) .. ". Подробнее: vk.cc/caHTZi") -- or 0 на всякий случай
+			IGS.Notify(pl, IGS.GetPhrase("you_can_spend"):format(IGS.SignPrice(balance)))
+			IGS.Notify(pl, IGS.GetPhrase("your_score"):format(pl.igs_score or 0)) -- or 0 на всякий случай
 		end)
 	end
 end)
@@ -138,11 +136,11 @@ end)
 	Поиск новых версий
 ---------------------------------------------------------------------------]]
 timer.Simple(1, function() -- http.Fetch
-	IGS.prints("Поиск обновлений")
+	IGS.prints(IGS.GetPhrase("searching_updates"))
 	if not IGS_REPO then return end
 	http.Fetch("https://api.github.com/repos/" .. IGS_REPO .. "/releases", function(json)
 		local releases = util.JSONToTable(json)
-		assert(releases[1], "Релизов нет. Нужно запустить CI") -- форк
+		assert(releases[1], IGS.GetPhrase("no_releases")) -- форк
 
 		table.sort(releases, function(a, b)
 			return tonumber(a.tag_name) > tonumber(b.tag_name)
@@ -154,12 +152,12 @@ timer.Simple(1, function() -- http.Fetch
 
 		if freshest_major > current_major then
 			local info_url = "https://github.com/" .. IGS_REPO .. "/releases/tag/" .. freshest_major
-			IGS.prints("🆕 Доступна новая Major версия: ", freshest_major, ". Установлена: ", (current_major == 0 and "распакованная 🚨" or current_major), "\nИнформация про обновление здесь: ", info_url)
+			IGS.prints(IGS.GetPhrase("major_update"):format(freshest_major, (current_major == 0 and IGS.GetPhrase("unpacked") or current_major), info_url))
 			if current_major == 0 then
-				IGS.prints("Для автообновления в addons должен быть только ", "igs-modification")
+				IGS.prints(IGS.GetPhrase("for_update_only_mod"))
 			end
 		else
-			IGS.prints("Major обновлений нет")
+			IGS.prints(IGS.GetPhrase("no_major_updates"))
 		end
 
 		local freshest_suitable -- "123.2"
@@ -172,15 +170,15 @@ timer.Simple(1, function() -- http.Fetch
 		end
 
 		if freshest_suitable then
-			IGS.prints("🆕 Найдено новое soft обновление. Текущая версия: ", current_ver, ", новая: ", freshest_suitable)
+			IGS.prints(IGS.GetPhrase("soft_update"):format(current_ver, freshest_suitable))
 			local url = "https://github.com/" .. IGS_REPO .. "/releases/download/" .. freshest_suitable .. "/superfile.json"
 			http.Fetch(url, function(superfile)
-				IGS.prints(Color(100, 250, 100), "", "Обновление загружено! ", "Перезагрузите сервер для применения")
+				IGS.prints(Color(100, 250, 100), "", IGS.GetPhrase("update_loaded"))
 				file.Write("igs/superfile.txt", superfile)
 				cookie.Set("igs_version", freshest_suitable)
 			end, error)
 		else
-			IGS.prints("Soft обновлений нет")
+			IGS.prints(IGS.GetPhrase("no_soft_updated"))
 		end
 	end, error)
 end)

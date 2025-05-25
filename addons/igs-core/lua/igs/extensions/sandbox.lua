@@ -113,7 +113,7 @@ hook.Add("IGS.OnItemInfoOpen", "CheckGiveWeaponOnSpawn", function(ITEM, fr)
 		local should_give = LocalPlayer():GetNWBool("igs.gos." .. ITEM:ID()) -- #todo UID и избавиться от :ID()
 		self:SetValue(should_give)
 
-		self:SetText("Выдавать при спавне")
+		self:SetText(IGS.GetPhrase("give_on_spawn"))
 		self.Label:SetTextColor(IGS.col.TEXT_SOFT)
 		self.Label:SetFont("igs.15")
 
@@ -144,7 +144,7 @@ else -- SV
 
 	local function PlayerSetWantReceiveOnSpawn(pl, ITEM, bWant)
 		SetShouldPlayerReceiveWep(pl, ITEM, bWant)
-		IGS.Notify(pl, ITEM:Name() .. (bWant and " " or " не ") .. "будет выдаваться при спавне")
+		IGS.Notify(pl, ITEM:Name() .. (bWant and " " or " " .. IGS.GetPhrase("willnot") .. " " ) .. IGS.GetPhrase("givenonspawn"))
 	end
 
 	local function GetShouldPlayerReceiveWep(pl, ITEM)
@@ -194,9 +194,7 @@ else -- SV
 			PlayerSetWantReceiveOnSpawn(pl, ITEM, true) -- default give on spawn
 			hook.Call("IGS_PlayerLoadout", IGS, pl)
 
-			local text = "%s теперь будет выдаваться при каждом респавне. " ..
-			"Если вы хотите временно отключить выдачу, " ..
-			"то снимите галочку в карточке предмета в /donate меню"
+			local text = IGS.GetPhrase("now_will_give_on_spawn")
 
 			pl:ChatPrint("▼")
 			IGS.Notify(pl, text:format(ITEM:Name()))
@@ -304,7 +302,7 @@ hook.Add("PlayerSpawnVehicle", "IGS", function(pl, _, class) -- model, class, ta
 	if IGS.PlayerHasOneOf(pl, IGS.ITEMS.SB.VEHS[class]) then -- покупал машину
 		local can = canSpawn(pl, class)
 		if not can then
-			IGS.Notify(pl, "У вас есть заспавнена эта машина")
+			IGS.Notify(pl, IGS.GetPhrase("you_have_this_spawned_vehicle"))
 		end
 
 		return can

@@ -131,9 +131,9 @@ end
 	КУПОНЫ
 ---------------------------------------------------------------------------]]
 local trans = {
-	["COUP_DOESNT_EXIST"] = "Купон не существует!",
-	["COUP_EXPIRED"]      = "Срок действия купона истек!",
-	["COUP_ACTIVATED"]    = "Купон уже активирован!",
+	["COUP_DOESNT_EXIST"] = IGS.GetPhrase("coupon_not_exist"),
+	["COUP_EXPIRED"]      = IGS.GetPhrase("coupon_expired"),
+	["COUP_ACTIVATED"]    = IGS.GetPhrase("coupon_already_activated"),
 }
 
 -- https://trello.com/c/6Oc1DykD/312
@@ -179,7 +179,7 @@ function IGS.PlayerActivateCoupon(pl, sCoupon, cb)
 			coupons_errors[sCoupon] = "COUP_ACTIVATED"
 
 			if not affected then
-				cb(false, "Купон уже активирован. Кстати, это очень(!) редкая ошибка. Сообщите администрации, тут должна была вылезти другая")
+				cb(false, IGS.GetPhrase("coupon_already_activatederr"))
 				return -- /\ однажды эта ошибка вылезла, когда я в цикле с клиента пытался активировать купон (https://img.qweqwe.ovh/1487848973964.png)
 			end -- в бд не изменен ни один купон
 
@@ -260,8 +260,7 @@ local function GetPlayerInventoryItemLocally(pl, invDbID)
 	if (not t) then return false end -- подсунут левый ИД, который уже удален или не существовал
 
 	function t:Delete()
-		assert(inv_map[invDbID],"Итем #" .. invDbID .. " не существует (уже удален?)")
-
+		assert(inv_map[invDbID], IGS.GetPhrase("item_not_exist"):format(invDbID))
 		inv_map[invDbID] = nil
 		table.remove(inv_list, t.listid)
 

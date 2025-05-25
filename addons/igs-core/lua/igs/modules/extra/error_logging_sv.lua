@@ -1,6 +1,6 @@
 hook.Add("IGS.OnApiError", "LogError", function(sMethod, error_uid, tParams)
 	if error_uid == "http_error" then
-		IGS.prints(Color(255, 0, 0), "", "CEPBEPA GMD BPEMEHHO HE9OCTynHbI. y}{e PEWAEM nPO6JIEMy")
+		IGS.prints(Color(255, 0, 0), "", IGS.GetPhrase("gmd_api_httperr"))
 	end
 
 	local sparams = "\n"

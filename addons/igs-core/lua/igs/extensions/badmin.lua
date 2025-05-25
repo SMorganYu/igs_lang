@@ -2,8 +2,8 @@ local STORE_ITEM = MT_IGSItem
 
 function STORE_ITEM:SetBAdminGroup(rank)
 	return self:SetInstaller(function(pl)
-		assert(rank, "IGS Rank expected, got " .. type(rank))
-		local RANK = assert(ba.ranks.Get(rank), "IGS Rank " .. rank .. " invalid")
+		assert(rank, IGS.GetPhrase("igs_rank_expected") .. " "  .. type(rank))
+		local RANK = assert(ba.ranks.Get(rank), IGS.GetPhrase("igs_rank_invalid"):format(rank))
 		pl:SetNetVar("UserGroup", RANK:GetID())
 	end):AddHook("IGS.PlayerPurchasesLoaded", function(pl, purchases) -- #TODO упростить хук. sam использует тот же
 		if CLIENT or not purchases then return end
